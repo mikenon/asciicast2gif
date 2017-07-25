@@ -29,10 +29,10 @@ RUN wget --quiet -O /opt/phantomjs.tar.bz2 https://bitbucket.org/ariya/phantomjs
 
 # install JDK
 
-RUN wget --quiet -O /opt/jdk-8u111-linux-x64.tar.gz --no-check-certificate --no-cookies --header 'Cookie: oraclelicense=accept-securebackup-cookie' http://download.oracle.com/otn-pub/java/jdk/8u111-b14/jdk-8u111-linux-x64.tar.gz && \
-    tar xzf /opt/jdk-8u111-linux-x64.tar.gz -C /opt && \
-    rm /opt/jdk-8u111-linux-x64.tar.gz && \
-    update-alternatives --install /usr/bin/java java /opt/jdk1.8.0_111/bin/java 1000
+RUN wget --quiet -O /opt/jdk-8u141-linux-x64.tar.gz --no-check-certificate --no-cookies --header 'Cookie: oraclelicense=accept-securebackup-cookie' http://download.oracle.com/otn-pub/java/jdk/8u141-b15/336fa29ff2bb4ef291e347e091f7f4a7/jdk-8u141-linux-x64.tar.gz && \
+    tar xzf /opt/jdk-8u141-linux-x64.tar.gz -C /opt && \
+    rm /opt/jdk-8u141-linux-x64.tar.gz && \
+    update-alternatives --install /usr/bin/java java /opt/jdk1.8.0_141/bin/java 1000
 
 # install leiningen
 
