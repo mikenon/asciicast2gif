@@ -4,6 +4,12 @@ set -e
 
 export DEBUG=${DEBUG:-0}
 
+function maybe_rm_tmp_dir {
+    if [ $tmp_dir = $$tmp_dir_internal ]; then
+        rm -rf $tmp_dir
+    fi
+}
+
 asciicast2gif_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 if ! type "node" >/dev/null 2>&1; then
@@ -36,8 +42,10 @@ speed=1
 scale=2
 width=""
 height=""
+tmp_dir_internal=$(mktemp -d 2>/dev/null || mktemp -d -t 'asciicast2gif-tmp')
+tmp_dir=${tmp_dir_internal}
 
-while getopts ":w:h:t:s:S:" opt; do
+while getopts ":w:h:t:s:S:d:" opt; do
     case $opt in
         t)
             theme=$OPTARG
@@ -53,6 +61,9 @@ while getopts ":w:h:t:s:S:" opt; do
             ;;
         h)
             height=$OPTARG
+            ;;
+        d)
+            tmp_dir=$OPTARG
             ;;
         \?)
             echo "Invalid option: -$OPTARG" >&2
@@ -78,6 +89,7 @@ if (($# != 2)); then
     echo "  -S <scale>        image scale / pixel density (default: 2)"
     echo "  -w <columns>      clip terminal to specified number of columns (width)"
     echo "  -h <rows>         clip terminal to specified number of rows (height)"
+    echo "  -d <path>         save frames in path"
     exit 1
 fi
 
@@ -89,8 +101,7 @@ if [[ -n $height ]]; then
     export HEIGHT=$height
 fi
 
-tmp_dir=$(mktemp -d 2>/dev/null || mktemp -d -t 'asciicast2gif-tmp')
-trap 'rm -rf $tmp_dir' EXIT
+trap maybe_rm_tmp_dir EXIT
 
 node \
     $NODE_OPTS \

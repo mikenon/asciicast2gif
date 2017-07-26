@@ -133,6 +133,25 @@
     (log/debug "Executing:" cmd)
     (shell cmd)))
 
+(defn ffmp-ffcc-row [item]
+  (str "file " (last (str/split (nth item 1) #"/")) "\nduration " (nth item 0) "\n"))
+
+(defn ffmp-ffcc-save [out-path delays-and-paths]
+  (log/debug "Saving timing file:" out-path)
+  (let [data (str "ffconcat version 1.0\n\n" (str/join "\n" (map ffmp-ffcc-row delays-and-paths)))]
+    (.writeFileSync fs out-path data)))
+
+(defn ffmp-cmd [ffcc-path out-path]
+  (str "ffmpeg -i " ffcc-path " -vf 'scale=trunc(iw/2)*2:trunc(ih/2)*2' -c:v libx264 -crf 20 -pix_fmt yuv420p " out-path))
+
+(defn- gen-mp4 [delays-and-paths out-path tmp-dir]
+  (log/info "Combining screenshots into mp4 file...")
+  (let [ffcc-path (str tmp-dir "/frames.ffconcat")
+        cmd (ffmp-cmd ffcc-path out-path)]
+    (ffmp-ffcc-save ffcc-path delays-and-paths)
+    (log/debug "Executing:" cmd)
+    (shell cmd)))
+
 (defn -main [& args]
   (when-not (= (count args) 6)
     (log/error "Error: bad number of args:" (count args))
@@ -150,6 +169,10 @@
           delays-and-paths (gen-image-frames renderer tmp-dir (sequence xf frames))]
       (close-stdin renderer)
       (<? (wait-for-exit renderer))
-      (gen-gif delays-and-paths out-path))))
+      (case (subs out-path (- (count out-path) 4) (count out-path))
+        ".gif" (gen-gif delays-and-paths out-path)
+        ".mp4" (gen-mp4 delays-and-paths out-path tmp-dir)
+        (log/error "Output filename determines format. use .gif or .mp4")))))
+
 
 (set! *main-cli-fn* -main)

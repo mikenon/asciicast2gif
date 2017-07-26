@@ -71,7 +71,7 @@ package installation.
 
 To build the scripts run:
 
-    lein cljsbuild once main && lein cljsbuild once page 
+    lein cljsbuild once main && lein cljsbuild once page
 
 ## Usage
 
@@ -84,6 +84,7 @@ Following options are supported:
     -S <scale>        image scale / pixel density (default: 2)
     -w <columns>      clip terminal to specified number of columns (width)
     -h <rows>         clip terminal to specified number of rows (height)
+    -d <path>         save frames in path
 
 Example of generating GIF from asciicast URL, with default options (normal
 speed, double pixel density, asciinema theme):
